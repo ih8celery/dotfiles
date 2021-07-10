@@ -10,6 +10,10 @@ sudo apt-get update && sudo apt-get install -y \
   ripgrep \
   rsync \
   shellcheck \
+  tinyscheme \
+  youtube-dl \
+  tldr \
+  python \
   tmux \
   unzip \
   vim-gtk
@@ -73,6 +77,16 @@ sudo apt-get install -y autoconf bison build-essential libssl-dev libyaml-dev \
 asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
 asdf install ruby 2.7.1
 asdf global ruby 2.7.1
+
+# Install forgit
+git clone https://github.com/wfxr/forgit.git ~/src/forgit
+
+# Install autojump
+git clone git://github.com/wting/autojump.git ~/src/autojump && cd ~/src/autojump \
+  && ./install.py
+
+# Install marker
+git clone --depth=1 https://github.com/pindexis/marker ~/.marker && ~/.marker/install.py
 
 # Install Ansible.
 pip3 install --user ansible
