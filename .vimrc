@@ -147,7 +147,7 @@ colorscheme gruvbox
 set background=dark
 
 " Specific colorscheme settings (must come after setting your colorscheme).
-if (g:colors_name == 'gruvbox')
+if (exists("g:colors_name") && g:colors_name == 'gruvbox')
   if (&background == 'dark')
     hi Visual cterm=NONE ctermfg=NONE ctermbg=237 guibg=#3a3a3a
   else

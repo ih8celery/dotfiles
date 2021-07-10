@@ -83,4 +83,6 @@ fi
 
 [ -f ~/src/forgit/forgit.plugin.sh ] && source ~/src/forgit/forgit.plugin.sh
 
+[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && source ~/.autojump/etc/profile.d/autojump.sh
+
 [ -f ~/.functions ] && source ~/.functions
