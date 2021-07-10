@@ -132,6 +132,17 @@ alias 644f="find . -type f -exec chmod 644 {} \;"
 
 alias open="/c/Program\ Files\ \(x86\)/Google/Chrome/Application/chrome.exe"
 
+#alias ga="git add"
+#alias gc="git commit"
+#alias gd="git diff"
+#alias gf="git fetch"
+#alias gl="git log"
+#alias gco="git checkout"
+#alias gr="git rebase"
+#alias gg="git pull"
+#alias gp="git push"
+#alias gcp="git cherry-pick"
+
 # This is specific to WSL 2. If the WSL 2 VM goes rogue and decides not to free
 # up memory, this command will free your memory after about 20-30 seconds.
 #   Details: https://github.com/microsoft/WSL/issues/4166#issuecomment-628493643

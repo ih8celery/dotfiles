@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # This file runs every time you open a new terminal window.
 
+export FORGIT_COPY_CMD="xclip -selection clipboard"
+
 # Limit number of lines and entries in the history. HISTFILESIZE controls the
 # history file on disk and HISTSIZE controls lines stored in memory.
 export HISTFILESIZE=50000
@@ -74,3 +76,11 @@ if grep -qE "(Microsoft|WSL)" /proc/version &>/dev/null; then
     # Requires: https://sourceforge.net/projects/vcxsrv/ (or alternative)
     export DISPLAY=:0
 fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+[[ -s "$HOME/.local/share/marker/marker.sh" ]] && source "$HOME/.local/share/marker/marker.sh"
+
+[ -f ~/src/forgit/forgit.plugin.sh ] && source ~/src/forgit/forgit.plugin.sh
+
+[ -f ~/.functions ] && source ~/.functions
