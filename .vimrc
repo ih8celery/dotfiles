@@ -15,6 +15,19 @@ Plug 'rakr/vim-one'
 " Gruvbox Community theme.
 Plug 'gruvbox-community/gruvbox'
 
+Plug 'vim-airline/vim-airline'
+
+Plug 'preservim/nerdtree'
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+Plug 'kovisoft/slimv'
+Plug 'tpope/vim-rsi'
+Plug 'guns/vim-sexp'
+Plug 'tpope/vim-repeat'
+Plug 'AndrewRadev/splitjoin.vim'
+Plug 'tpope/vim-surround'
+
 " Integrate fzf with Vim.
 Plug '~/.fzf'
 Plug 'junegunn/fzf.vim'
@@ -22,15 +35,8 @@ Plug 'junegunn/fzf.vim'
 " Better manage Vim sessions.
 Plug 'tpope/vim-obsession'
 
-" Zoom in and out of a specific split pane (similar to tmux).
-Plug 'dhruvasagar/vim-zoom'
-
 " Pass focus events from tmux to Vim (useful for autoread and linting tools).
 Plug 'tmux-plugins/vim-tmux-focus-events'
-
-" Navigate and manipulate files in a tree view.
-Plug 'lambdalisue/fern.vim'
-Plug 'lambdalisue/fern-mapping-mark-children.vim'
 
 " Helpers for moving and manipulating files / directories.
 Plug 'tpope/vim-eunuch'
@@ -46,9 +52,6 @@ Plug 'inkarkat/vim-ingo-library' | Plug 'inkarkat/vim-SpellCheck'
 
 " Briefly highlight which text was yanked.
 Plug 'machakann/vim-highlightedyank'
-
-" Highlight which character to jump to when using horizontal movement keys.
-Plug 'unblevable/quick-scope'
 
 " Modify * to also work with visual selections.
 Plug 'nelstrom/vim-visual-star-search'
@@ -80,20 +83,11 @@ Plug 'mhinz/vim-signify'
 " A git wrapper.
 Plug 'tpope/vim-fugitive'
 
-" Dim paragraphs above and below the active paragraph.
-Plug 'junegunn/limelight.vim'
-
-" Distraction free writing by removing UI elements and centering everything.
-Plug 'junegunn/goyo.vim'
-
 " A bunch of useful language related snippets (ultisnips is the engine).
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
 " Automatically show Vim's complete menu while typing.
 Plug 'vim-scripts/AutoComplPop'
-
-" Run test suites for various languages.
-Plug 'janko/vim-test'
 
 " Languages and file types.
 Plug 'cakebaker/scss-syntax.vim'
@@ -109,6 +103,8 @@ Plug 'lifepillar/pgsql.vim'
 Plug 'othree/html5.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'PotatoesMaster/i3-vim-syntax'
+Plug 'leafgarland/typescript-vim'
+Plug 'maxmellon/vim-jsx-pretty'
 Plug 'stephpy/vim-yaml'
 Plug 'tmux-plugins/vim-tmux'
 Plug 'tpope/vim-git'
@@ -162,25 +158,6 @@ hi SpellBad cterm=underline ctermfg=203 guifg=#ff5f5f
 hi SpellLocal cterm=underline ctermfg=203 guifg=#ff5f5f
 hi SpellRare cterm=underline ctermfg=203 guifg=#ff5f5f
 hi SpellCap cterm=underline ctermfg=203 guifg=#ff5f5f
-
-" -----------------------------------------------------------------------------
-" Status line
-" -----------------------------------------------------------------------------
-
-" Heavily inspired by: https://github.com/junegunn/dotfiles/blob/master/vimrc
-function! s:statusline_expr()
-  let mod = "%{&modified ? '[+] ' : !&modifiable ? '[x] ' : ''}"
-  let ro  = "%{&readonly ? '[RO] ' : ''}"
-  let ft  = "%{len(&filetype) ? '['.&filetype.'] ' : ''}"
-  let fug = "%{exists('g:loaded_fugitive') ? fugitive#statusline() : ''}"
-  let sep = ' %= '
-  let pos = ' %-12(%l : %c%V%) '
-  let pct = ' %P'
-
-  return '[%n] %f %<'.mod.ro.ft.fug.sep.pos.'%*'.pct
-endfunction
-
-let &statusline = s:statusline_expr()
 
 " -----------------------------------------------------------------------------
 " Basic Settings
@@ -254,6 +231,27 @@ runtime! macros/matchit.vim
 " Basic mappings
 " -----------------------------------------------------------------------------
 
+" mappings to focus/unfocus splits
+nnoremap <C-W>o :call MaximizeToggle()<CR>
+nnoremap <C-W><C-O> :call MaximizeToggle()<CR>
+
+function! MaximizeToggle()
+  if exists("s:maximize_session")
+    exec "source " . s:maximize_session
+    call delete(s:maximize_session)
+    unlet s:maximize_session
+    let &hidden=s:maximize_hidden_save
+    unlet s:maximize_hidden_save
+  else
+    let s:maximize_hidden_save = &hidden
+    let s:maximize_session = tempname()
+    set hidden
+    exec "mksession! " . s:maximize_session
+    only
+  endif
+endfunction
+
+
 " Seamlessly treat visual lines as actual lines when moving around.
 noremap j gj
 noremap k gk
@@ -291,10 +289,6 @@ xnoremap <silent> s* "sy:let @/=@s<CR>cgn
 " Clear search highlights.
 map <Leader><Space> :let @/=''<CR>
 
-" Format paragraph (selected or not) to 80 character lines.
-nnoremap <Leader>g gqap
-xnoremap <Leader>g gqa
-
 " Prevent x from overriding what's in the clipboard.
 noremap x "_x
 noremap X "_x
@@ -317,24 +311,10 @@ map <F5> :setlocal spell!<CR>
 " Toggle relative line numbers and regular line numbers.
 nmap <F6> :set invrelativenumber<CR>
 
-" Automatically fix the last misspelled word and jump back to where you were.
-"   Taken from this talk: https://www.youtube.com/watch?v=lwD8G1P52Sk
-nnoremap <leader>sp :normal! mz[s1z=`z<CR>
-
 " Toggle visually showing all whitespace characters.
 noremap <F7> :set list!<CR>
 inoremap <F7> <C-o>:set list!<CR>
 cnoremap <F7> <C-c>:set list!<CR>
-
-" Move 1 more lines up or down in normal and visual selection modes.
-nnoremap <C-k> :m .-2<CR>==
-nnoremap <C-j> :m .+1<CR>==
-vnoremap <C-k> :m '<-2<CR>gv=gv
-vnoremap <C-j> :m '>+1<CR>gv=gv
-nnoremap <C-Up> :m .-2<CR>==
-nnoremap <C-Down> :m .+1<CR>==
-vnoremap <C-Up> :m '<-2<CR>gv=gv
-vnoremap <C-Down> :m '>+1<CR>gv=gv
 
 " Toggle quickfix window.
 function! QuickFix_toggle()
@@ -349,10 +329,6 @@ function! QuickFix_toggle()
     copen
 endfunction
 nnoremap <silent> <Leader>c :call QuickFix_toggle()<CR>
-
-" Convert the selected text's title case using the external tcc script.
-"   Requires: https://github.com/nickjj/title-case-converter
-vnoremap <Leader>tc c<C-r>=system('tcc', getreg('"'))[:-2]<CR>
 
 " Navigate the complete menu items like CTRL+n / CTRL+p would.
 inoremap <expr> <Down> pumvisible() ? "<C-n>" :"<Down>"
@@ -378,9 +354,6 @@ au FocusGained,BufEnter * :checktime
 " Unset paste on InsertLeave.
 autocmd InsertLeave * silent! set nopaste
 
-" Make sure all types of requirements.txt files get syntax highlighting.
-autocmd BufNewFile,BufRead requirements*.txt set ft=python
-
 " Make sure .aliases, .bash_aliases and similar files get syntax highlighting.
 autocmd BufNewFile,BufRead .*aliases* set ft=sh
 
@@ -396,17 +369,6 @@ augroup CursorLine
     au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
     au WinLeave * setlocal nocursorline
 augroup END
-
-" Mappings to make Vim more friendly towards presenting slides.
-autocmd BufNewFile,BufRead *.vpm call SetVimPresentationMode()
-function SetVimPresentationMode()
-  nnoremap <buffer> <Right> :n<CR>
-  nnoremap <buffer> <Left> :N<CR>
-
-  if !exists('#goyo')
-    Goyo
-  endif
-endfunction
 
 " ----------------------------------------------------------------------------
 " Basic commands
@@ -455,6 +417,10 @@ command! -bang Profile call s:profile(<bang>0)
 " Plugin settings, mappings and autocommands
 " -----------------------------------------------------------------------------
 
+nnoremap <leader>cv :call CocAction('jumpDefinition', 'vsplit')<cr>
+nnoremap <leader>ch :call CocAction('jumpDefinition', 'split')<cr>
+nnoremap <leader>ct :call CocAction('jumpDefinition', 'tabe')<cr>
+
 " .............................................................................
 " junegunn/fzf.vim
 " .............................................................................
@@ -489,89 +455,15 @@ nnoremap <silent> <C-p> :FZF -m<CR>
 nnoremap <silent> <Leader><Enter> :Buffers<CR>
 nnoremap <silent> <Leader>l :Lines<CR>
 
-" Allow passing optional flags into the Rg command.
-"   Example: :Rg myterm -g '*.md'
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \ "rg --column --line-number --no-heading --color=always --smart-case " .
-  \ <q-args>, 1, fzf#vim#with_preview(), <bang>0)
-
-" .............................................................................
-" lambdalisue/fern.vim
-" .............................................................................
-
-" Disable netrw.
-let g:loaded_netrw  = 1
-let g:loaded_netrwPlugin = 1
-let g:loaded_netrwSettings = 1
-let g:loaded_netrwFileHandlers = 1
-
-augroup my-fern-hijack
-  autocmd!
-  autocmd BufEnter * ++nested call s:hijack_directory()
-augroup END
-
-function! s:hijack_directory() abort
-  let path = expand('%:p')
-  if !isdirectory(path)
-    return
-  endif
-  bwipeout %
-  execute printf('Fern %s', fnameescape(path))
-endfunction
-
-" Custom settings and mappings.
-let g:fern#disable_default_mappings = 1
-let g:fern#default_hidden = 1
-
-noremap <silent> <Leader>f :Fern . -drawer -reveal=% -toggle -width=35<CR>
-
-function! FernInit() abort
-  nmap <buffer><expr>
-        \ <Plug>(fern-my-open-expand-collapse)
-        \ fern#smart#leaf(
-        \   "\<Plug>(fern-action-open:select)",
-        \   "\<Plug>(fern-action-expand)",
-        \   "\<Plug>(fern-action-collapse)",
-        \ )
-  nmap <buffer> <CR> <Plug>(fern-my-open-expand-collapse)
-  nmap <buffer> <2-LeftMouse> <Plug>(fern-my-open-expand-collapse)
-  nmap <buffer> n <Plug>(fern-action-new-path)
-  nmap <buffer> d <Plug>(fern-action-remove)
-  nmap <buffer> m <Plug>(fern-action-move)
-  nmap <buffer> M <Plug>(fern-action-rename)
-  nmap <buffer> h <Plug>(fern-action-hidden-toggle)
-  nmap <buffer> r <Plug>(fern-action-reload)
-  nmap <buffer> k <Plug>(fern-action-mark)
-  nmap <buffer> K <Plug>(fern-action-mark-children:leaf)
-  nmap <buffer> b <Plug>(fern-action-open:split)
-  nmap <buffer> v <Plug>(fern-action-open:vsplit)
-  nmap <buffer><nowait> < <Plug>(fern-action-leave)
-  nmap <buffer><nowait> > <Plug>(fern-action-enter)
-endfunction
-
-augroup FernGroup
-  autocmd!
-  autocmd FileType fern call FernInit()
-augroup END
-
-" .............................................................................
-" unblevable/quick-scope
-" .............................................................................
-
-" Trigger a highlight in the appropriate direction when pressing these keys.
-let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
-
-" Only underline the highlights instead of using custom colors.
-highlight QuickScopePrimary gui=underline cterm=underline
-highlight QuickScopeSecondary gui=underline cterm=underline
-
 " .............................................................................
 " mhinz/vim-grepper
 " .............................................................................
 
 let g:grepper={}
-let g:grepper.tools=["rg"]
+let g:grepper.tools=['ag', 'git']
+
+nnoremap <leader>G :Grepper -tool git<cr>
+nnoremap <leader>g :Grepper -tool ag<cr>
 
 xmap gr <plug>(GrepperOperator)
 
@@ -607,12 +499,6 @@ let g:fastfold_savehook=0
 let g:fastfold_fold_command_suffixes=[]
 
 " .............................................................................
-" junegunn/limelight.vim
-" .............................................................................
-
-let g:limelight_conceal_ctermfg=244
-
-" .............................................................................
 " iamcco/markdown-preview.nvim
 " .............................................................................
 
@@ -626,25 +512,3 @@ let g:mkdp_markdown_css=fnameescape($HOME).'/.local/lib/github-markdown-css/gith
 
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-
-" .............................................................................
-" janko/vim-test
-" .............................................................................
-
-if has('nvim')
-  let test#strategy='neovim'
-else
-  let test#strategy='vimterminal'
-endif
-
-let test#python#pytest#executable='docker-compose exec web py.test'
-
-let test#ruby#rails#executable='docker-compose exec -e RAILS_ENV=test webpacker rails test'
-
-let test#elixir#exunit#executable='docker-compose exec -e MIX_ENV=test web mix test'
-
-nmap <silent> t<C-n> :TestNearest<CR>
-nmap <silent> t<C-f> :TestFile<CR>
-nmap <silent> t<C-a> :TestSuite<CR>
-nmap <silent> t<C-l> :TestLast<CR>
-nmap <silent> t<C-v> :TestVisit<CR>

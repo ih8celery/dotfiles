@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # This file runs every time you open a new terminal window.
 
+set -o emacs
+
 export FORGIT_COPY_CMD="xclip -selection clipboard"
 
 # Limit number of lines and entries in the history. HISTFILESIZE controls the
@@ -38,6 +40,8 @@ parse_git_branch() {
 # Set a non-distracting prompt.
 PS1='\[[01;32m\]\u@\h\[[00m\]:\[[01;34m\]\w\[[00m\] \[[01;33m\]$(parse_git_branch)\[[00m\]\$ '
 
+export TERMINFO='/usr/share/terminfo/'
+export TERM="xterm-color"
 # If it's an xterm compatible terminal, set the title to user@host: dir.
 case "${TERM}" in
 xterm*|rxvt*)
@@ -59,23 +63,23 @@ export FZF_DEFAULT_OPTS="--color=dark"
 [ -f "${HOME}/.fzf.bash" ] && source "${HOME}/.fzf.bash"
 
 # WSL 2 specific settings.
-if grep -q "microsoft" /proc/version &>/dev/null; then
+#if grep -q "microsoft" /proc/version &>/dev/null; then
     # Requires: https://sourceforge.net/projects/vcxsrv/ (or alternative)
-    export DISPLAY="$(/sbin/ip route | awk '/default/ { print $3 }'):0"
+#    export DISPLAY="$(/sbin/ip route | awk '/default/ { print $3 }'):0"
 
-    # Allows your gpg passphrase prompt to spawn (useful for signing commits).
-    export GPG_TTY=$(tty)
-fi
+     # Allows your gpg passphrase prompt to spawn (useful for signing commits).
+#    export GPG_TTY=$(tty)
+#fi
 
 # WSL 1 specific settings.
-if grep -qE "(Microsoft|WSL)" /proc/version &>/dev/null; then
-    if [ "$(umask)" = "0000" ]; then
-        umask 0022
-    fi
+# if grep -qE "(Microsoft|WSL)" /proc/version &>/dev/null; then
+#     if [ "$(umask)" = "0000" ]; then
+#         umask 0022
+#     fi
 
-    # Requires: https://sourceforge.net/projects/vcxsrv/ (or alternative)
-    export DISPLAY=:0
-fi
+#     # Requires: https://sourceforge.net/projects/vcxsrv/ (or alternative)
+#     export DISPLAY=:0
+# fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
@@ -86,3 +90,6 @@ fi
 [[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && source ~/.autojump/etc/profile.d/autojump.sh
 
 [ -f ~/.functions ] && source ~/.functions
+
+export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
+export LIBGL_ALWAYS_INDIRECT=1
