@@ -21,12 +21,15 @@ Plug 'preservim/nerdtree'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+Plug 'tpope/vim-dispatch'
+Plug 'clojure-vim/vim-jack-in'
 Plug 'kovisoft/slimv'
 Plug 'tpope/vim-rsi'
 Plug 'guns/vim-sexp'
 Plug 'tpope/vim-repeat'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'tpope/vim-surround'
+Plug 'clojure-vim/async-clj-omni'
 
 " Integrate fzf with Vim.
 Plug '~/.fzf'
@@ -92,6 +95,8 @@ Plug 'vim-scripts/AutoComplPop'
 " Languages and file types.
 Plug 'cakebaker/scss-syntax.vim'
 Plug 'chr4/nginx.vim'
+Plug 'wlangstroth/vim-racket'
+"Plug 'Olical/conjure', {'tag': 'v4.22.0'}
 Plug 'chrisbra/csv.vim'
 Plug 'ekalinin/dockerfile.vim'
 Plug 'elixir-editors/vim-elixir'
@@ -116,6 +121,8 @@ Plug 'wgwoods/vim-systemd-syntax'
 Plug 'towolf/vim-helm'
 
 call plug#end()
+
+let g:conjure#filetype#fennel = "conjure.client.fennel.stdio"
 
 " -----------------------------------------------------------------------------
 " Color settings
