@@ -15,6 +15,8 @@ sudo apt-get update && sudo apt-get install -y \
   tldr \
   python \
   tmux \
+  vim-nox \
+  silversearcher-ag \
   unzip \
   vim-gtk
 
