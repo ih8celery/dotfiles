@@ -120,7 +120,13 @@ sudo apt-get update && sudo apt-get install -y \
   ripgrep \
   rsync \
   shellcheck \
+  tinyscheme \
+  youtube-dl \
+  tldr \
+  python \
   tmux \
+  vim-nox \
+  silversearcher-ag \
   unzip \
   vim-gtk
 ```
@@ -220,6 +226,7 @@ mkdir -p ~/.local/bin && mkdir -p ~/.vim/spell \
   && ln -fs ~/dotfiles/.profile ~/.profile \
   && ln -fs ~/dotfiles/.tmux.conf ~/.tmux.conf \
   && ln -fs ~/dotfiles/.vimrc ~/.vimrc \
+  && ln -fs ~/dotfiles/.functions ~/.functions \
   && ln -fs ~/dotfiles/.vim/spell/en.utf-8.add ~/.vim/spell/en.utf-8.add \
   && ln -fs ~/dotfiles/.local/bin/set-theme ~/.local/bin/set-theme \
   && sudo ln -fs ~/dotfiles/etc/wsl.conf /etc/wsl.conf
