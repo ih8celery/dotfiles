@@ -347,3 +347,15 @@ fbw() {
         buku --write $i
     done
 }
+
+add-remote() {
+	if [[ $# -gt 0 ]]; then
+		project_name="$1"
+	else
+		project_name=$(basename $(pwd))
+	fi
+
+	user_name=$(git config --global --get user.username)
+
+	git remote add origin https://github.com/${user_name}/${project_name}.git
+}
